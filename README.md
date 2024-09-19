@@ -15,3 +15,7 @@ efile dec <file1> <file2> ... <fileN>  <key>
 
 efile dec <file_folder> <key>
 ```
+## install
+```bash
+go install github.com/Beriholic/efile@latest
+```
