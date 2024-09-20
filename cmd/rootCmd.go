@@ -27,4 +27,5 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(encryptCmd)
 	rootCmd.AddCommand(decryptCmd)
+	rootCmd.AddCommand(versionCmd)
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/Beriholic/efile/state"
 )
@@ -51,12 +52,27 @@ func decryptFileName(encryptedFileName string, key []byte) (string, error) {
 }
 
 func ProcessFolderDecrypt(folder string, key []byte) error {
+	var wg sync.WaitGroup
+	errors := make(chan error)
 	return filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+		if len(errors) == 0 {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				if err != nil {
+					errors <- err
+				}
+				if !info.IsDir() {
+					err = DecryptAndSave(path, key)
+					if err != nil {
+						errors <- err
+					}
+				}
+			}()
 		}
-		if !info.IsDir() {
-			return DecryptAndSave(path, key)
+		wg.Wait()
+		if len(errors) > 0 {
+			return <-errors
 		}
 		return nil
 	})
