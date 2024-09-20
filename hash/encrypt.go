@@ -56,31 +56,43 @@ func encryptFileName(fileName string, key []byte) (string, error) {
 
 func ProcessFolder(folderPath string, key []byte) error {
 	var wg sync.WaitGroup
-	errors := make(chan error)
+	errors := make(chan error, 1)
 
-	return filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
-		if len(errors) == 0 {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
+	err := filepath.Walk(folderPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err != nil {
+				errors <- err
+			}
+			if !info.IsDir() {
+				err = EncryptAndSave(path, key)
 				if err != nil {
 					errors <- err
 				}
-				if !info.IsDir() {
-					err = EncryptAndSave(path, key)
-					if err != nil {
-						errors <- err
-					}
-				}
-			}()
-		}
-
-		wg.Wait()
-		if len(errors) > 0 {
-			return <-errors
-		}
+			}
+		}()
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+	go func() {
+		wg.Wait()
+		close(errors)
+	}()
+
+	for err := range errors {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func EncryptAndSave(filePath string, key []byte) error {
