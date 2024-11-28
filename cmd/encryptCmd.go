@@ -44,6 +44,11 @@ var encryptCmd = &cobra.Command{
 					return
 				}
 
+				if !info.IsDir() && !info.Mode().IsRegular() {
+					fmt.Println("Error: ", path, " is not a file or folder")
+					return
+				}
+
 				if info.IsDir() {
 					err = hash.ProcessFolder(path, key)
 					if err != nil {
@@ -62,7 +67,7 @@ var encryptCmd = &cobra.Command{
 		close(errors)
 
 		if len(errors) > 0 {
-			fmt.Println("Encryption errors, Do you want to check them out? [y/n]")
+			fmt.Println("Encryption errors, please check your key and try again, do you want to check them out? [y/n]")
 			response := ""
 			fmt.Scanf("%s", &response)
 			if response != "y" {
