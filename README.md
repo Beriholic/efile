@@ -8,7 +8,7 @@ efile enc <file1> <file2> ... <fileN>
 
 efile enc <file_folder>
 ```
-(Will prompt interactively for encryption key)
+> Will prompt interactively for encryption key
 
 decrypt
 ```bash
@@ -16,7 +16,6 @@ efile dec <file1> <file2> ... <fileN>
 
 efile dec <file_folder>
 ```
-(Will prompt interactively for decryption key)
 
 ## install
 ```bash
