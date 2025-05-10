@@ -200,3 +200,72 @@ func decryptString(encryptedText string, key []byte) (string, error) {
 
 	return string(plaintext), nil
 }
+
+func EncryptFileContent(srcPath, dstPath string, key []byte) error {
+	keyBytes := processKey(key)
+
+	block, err := aes.NewCipher(keyBytes)
+	if err != nil {
+		return err
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return err
+	}
+
+	plaintext, err := os.ReadFile(srcPath)
+	if err != nil {
+		return fmt.Errorf("failed to read source file: %v", err)
+	}
+
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return err
+	}
+
+	ciphertext := gcm.Seal(nonce, nonce, plaintext, nil)
+
+	err = os.WriteFile(dstPath, ciphertext, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write encrypted file: %v", err)
+	}
+
+	return nil
+}
+
+func DecryptFileContent(srcPath, dstPath string, key []byte) error {
+	keyBytes := processKey(key)
+
+	block, err := aes.NewCipher(keyBytes)
+	if err != nil {
+		return err
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return err
+	}
+
+	ciphertext, err := os.ReadFile(srcPath)
+	if err != nil {
+		return fmt.Errorf("failed to read encrypted file: %v", err)
+	}
+
+	if len(ciphertext) < gcm.NonceSize() {
+		return fmt.Errorf("ciphertext too short")
+	}
+
+	nonce, ciphertext := ciphertext[:gcm.NonceSize()], ciphertext[gcm.NonceSize():]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return fmt.Errorf("failed to decrypt file: %v", err)
+	}
+
+	err = os.WriteFile(dstPath, plaintext, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write decrypted file: %v", err)
+	}
+
+	return nil
+}
