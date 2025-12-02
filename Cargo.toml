@@ -1,0 +1,14 @@
+[package]
+name = "efile"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+rpassword = "7"
+aes-gcm = { version = "0.10", features = ["aes"] }
+rand = "0.8"
+argon2 = "0.5"
+walkdir = "2"
+base64 = "0.22"

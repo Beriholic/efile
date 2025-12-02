@@ -16,8 +16,3 @@ efile dec <file1> <file2> ... <fileN>
 
 efile dec <file_folder>
 ```
-
-## install
-```bash
-go install github.com/Beriholic/efile@latest
-```
