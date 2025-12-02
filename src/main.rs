@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use rpassword::prompt_password;
+use inquire::{Password, PasswordDisplayMode};
 
 mod cli;
 mod crypto;
@@ -14,11 +14,16 @@ fn main() -> Result<()> {
             Ok(())
         }
         cli::Commands::Enc { inputs } => {
-            let password = prompt_password("Key: ")?;
+            let password = Password::new("Key:")
+                .with_display_mode(PasswordDisplayMode::Masked)
+                .prompt()?;
             ops::process_inputs(inputs, &password, true)
         }
         cli::Commands::Dec { inputs } => {
-            let password = prompt_password("Key: ")?;
+            let password = Password::new("Key:")
+                .with_display_mode(PasswordDisplayMode::Masked)
+                .without_confirmation()
+                .prompt()?;
             ops::process_inputs(inputs, &password, false)
         }
     }
