@@ -1,0 +1,17 @@
+[package]
+name = "efile"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+walkdir = "2"
+base64 = "0.22"
+age = "0.11"
+inquire = "0.7.5"
+indicatif = "0.17"
+rayon = "1"
+chacha20 = "0.9"
+sha2 = "0.10"
+rand = "0.8"
