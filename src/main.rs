@@ -8,9 +8,18 @@ mod ops;
 
 fn main() -> Result<()> {
     let cli = cli::Cli::parse();
-    let password = prompt_password("Key: ")?;
     match cli.command {
-        cli::Commands::Enc { inputs } => ops::process_inputs(inputs, &password, true),
-        cli::Commands::Dec { inputs } => ops::process_inputs(inputs, &password, false),
+        cli::Commands::Version => {
+            println!("efile {}", env!("CARGO_PKG_VERSION"));
+            Ok(())
+        }
+        cli::Commands::Enc { inputs } => {
+            let password = prompt_password("Key: ")?;
+            ops::process_inputs(inputs, &password, true)
+        }
+        cli::Commands::Dec { inputs } => {
+            let password = prompt_password("Key: ")?;
+            ops::process_inputs(inputs, &password, false)
+        }
     }
 }
