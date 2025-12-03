@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    tags: ['*']
+    tags: ["*"]
 
 permissions:
   contents: write
@@ -17,4 +17,4 @@ jobs:
           {"target": "x86_64-pc-windows-msvc", "os": "ubuntu-22.04"}
         ]
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
